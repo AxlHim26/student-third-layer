@@ -1,0 +1,32 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: student_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: student_user
+      POSTGRES_PASSWORD: student_pass
+      POSTGRES_DB: student_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  app:
+    build: .
+    container_name: student_app
+    depends_on:
+      - postgres
+    environment:
+      DB_URL: jdbc:postgresql://student_postgres:5432/student_db
+      DB_USERNAME: student_user
+      DB_PASSWORD: student_pass
+    ports:
+      - "1234:1234"
+    stdin_open: true
+    tty: true
+
+volumes:
+  postgres_data:
